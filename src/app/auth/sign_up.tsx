@@ -4,26 +4,58 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert,
 } from 'react-native';
+import { useState } from 'react';
 import { Link, router } from 'expo-router';
+import { auth } from '../../config';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import Button from '../../components/Button';
 
-const handlePress = (): void => {
+const handlePress = (email: string, password: string): void => {
   //会員登録
-  router.replace('/memo/list');
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      console.log(userCredential.user.uid);
+      router.replace('/memo/list');
+    })
+    .catch((error) => {
+      console.log(error);
+      Alert.alert(error.message);
+    });
 };
 
 const sign_up = (): React.JSX.Element => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <View style={styles.container}>
       <View style={styles.inner}>
         <Text style={styles.title}>Sign Up</Text>
-        <TextInput style={styles.input} value="Email Address" />
-        <TextInput style={styles.input} value="Password" />
-        <Button onPress={handlePress} label="Submit" />
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholder="Email Address"
+          textContentType="emailAddress"
+        />
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => {
+            setPassword(text);
+          }}
+          autoCapitalize="none"
+          secureTextEntry
+          placeholder="Password"
+          textContentType="password"
+        />
+        <Button onPress={() => handlePress(email, password)} label="Submit" />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already Registered?</Text>
-          <Link href="/auth/login" asChild>
+          <Link href="/auth/login" asChild replace>
             <TouchableOpacity>
               <Text style={styles.footerLink}>Log in.</Text>
             </TouchableOpacity>
