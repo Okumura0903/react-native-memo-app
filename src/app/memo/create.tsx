@@ -18,7 +18,7 @@ const handlePress = async (bodyText: string): Promise<void> => {
       bodyText: bodyText,
       updatedAt: Timestamp.fromDate(new Date()),
     });
-    console.log('success', docRef.id);
+    // console.log('success', docRef.id);
     router.back();
   } catch (e) {
     console.log(e);
